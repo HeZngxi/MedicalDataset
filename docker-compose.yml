@@ -1,0 +1,59 @@
+# Chroma 服务配置文件
+# 可以在此处添加其他高级配置选项
+services:
+  # Chroma 向量数据库
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: chroma_db
+    ports:
+      - "8010:8000"
+    volumes:
+      # ✅ 统一挂载到官方默认路径 /chroma_db
+      - ./chroma_data:/chroma_db
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ALLOW_RESET=TRUE  # 允许重置集合
+    restart: unless-stopped
+    networks:
+      - embedding_network
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 bash -c 'echo > /dev/tcp/localhost/8000'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # FastAPI 后端服务
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: embedding_backend
+    ports:
+      - "8011:8011"
+    volumes:
+      - ./bookdata:/bookdata
+      # ❌ 移除 backend 的 chroma_data 挂载，避免混淆
+    environment:
+      - CHROMA_HOST=chroma
+      - CHROMA_PORT=8000
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      chroma:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - embedding_network
+    command: >
+      sh -c "python initialize_vector_store.py && uvicorn app.main:app --host 0.0.0.0 --port 8011"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8011/health')\" 2>/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+networks:
+  embedding_network:
+    driver: bridge

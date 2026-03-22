@@ -1,0 +1,31 @@
+# --- Web Framework ---
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+python-multipart
+
+# --- Vector Database ---
+chromadb>=0.5.0
+
+# --- AI & Text Processing ---
+# 升级到 0.1.x 以上以解决与 LlamaIndex 的依赖冲突
+langchain>=0.1.0
+langchain-community>=0.0.20
+PyMuPDF
+
+# NumPy 版本限制：ChromaDB 0.4.x 与 NumPy 2.0 不兼容
+numpy<2.0
+
+# LlamaIndex Ecosystem
+llama-index-core
+llama-index-embeddings-dashscope
+llama-index-readers-file
+
+# Document Parsing
+ebooklib
+beautifulsoup4
+
+# --- Utilities ---
+python-dotenv
+pydantic>=2.0
+pydantic-settings
+httpx

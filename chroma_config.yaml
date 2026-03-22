@@ -1,0 +1,6 @@
+chroma:
+  server_http_port: 8000
+  server_host: 0.0.0.0
+  is_persistent: true
+  persist_directory: /chroma_db
+  allow_reset: true
