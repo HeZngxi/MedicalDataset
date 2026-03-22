@@ -99,8 +99,8 @@ async def search(request: QueryRequest):
         raise HTTPException(status_code=503, detail="服务未初始化")
     
     try:
-        # 获取查询向量
-        query_embedding = await embedding_service.get_embedding(request.query)
+        # 获取查询向量 (同步方法，不需要 await)
+        query_embedding = embedding_service.get_embedding(request.query)
         
         if not query_embedding:
             raise HTTPException(status_code=500, detail="无法获取查询向量")
