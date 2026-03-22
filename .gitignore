@@ -38,8 +38,11 @@ wheels/
 .DS_Store
 Thumbs.db
 
-# Chroma 数据（如果需要版本控制可以取消注释）
-# chroma_data/
+# Chroma 数据（不需要版本控制）
+chroma_data/
+
+# 书籍数据（不需要版本控制）
+bookdata/
 
 # Docker
 docker-compose.override.yml
